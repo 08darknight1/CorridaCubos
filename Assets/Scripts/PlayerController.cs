@@ -5,6 +5,7 @@ using UnityEngine;
 public class PlayerController : MonoBehaviour
 {
     //1 = direita; 2 = esquerda
+  
     public int direcao = 1;
     public float speed = 0;
     public float countDown = 1.0f;
@@ -254,14 +255,6 @@ public class PlayerController : MonoBehaviour
                     break;
                 }
             }
-        }
-    }
-
-    private void OnCollisionEnter2D(Collision2D col)
-    {
-        if (col.gameObject.tag == "Win")
-        {
-            Destroy(gameObject);
         }
     }
 
