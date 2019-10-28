@@ -7,32 +7,45 @@ using UnityEngine.UI;
 
 public class WinScript : MonoBehaviour
 {
-    [SerializeField] private GameObject [] playerOnMap;
+    [SerializeField] private GameObject[] playerOnMap;
+        
+    public int PointsToWin;
 
     [SerializeField] private int[] playerScore;
 
-    private GameObject winObject;
+    private GameObject winObject, canvasObject;
 
     [SerializeField] private GameObject textWinner;
 
-    [SerializeField] private int playerOnTheMapSize;
-    
-    
+    void Awake()
+    {
+        findObjects();  
+        playerScore = new int [playerOnMap.Length];
+        canvasObject = GameObject.FindGameObjectWithTag("UI");
+        canvasObject.SetActive(false);
+    }    
     
     void Start()
     {
         findObjects();  
-        playerScore = new int [playerOnMap.Length];
-        playerOnTheMapSize = playerOnMap.Length;
         winObject = GameObject.Find("Win");
         DontDestroyOnLoad(winObject);
+        playerScore = new int [playerOnMap.Length];
     }
 
     // Update is called once per frame
     void Update()
-    {         
-        checkWinner();
-        findObjects();      
+    {
+        if (SceneManager.GetActiveScene().buildIndex == 5 && canvasObject.activeSelf == false){
+            canvasObject.SetActive(true);
+            checkWinner();
+        }
+
+        for (int x = 0; x < playerOnMap.Length; x++){
+             if (playerOnMap[x] == null){
+                 findObjects();
+             }
+         }
     }
 
     private void OnTriggerEnter2D (Collider2D col)
@@ -44,13 +57,14 @@ public class WinScript : MonoBehaviour
                 if (col.gameObject.name == playerOnMap[x].name)
                 {    
                     playerScore[x]++;
-                    checkWinner();
                 }
             }
             
-            SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex + 1);         
+            SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex + 1);                
             
             checkWinner();
+            
+            findObjects();
             
         }     
     }
@@ -79,17 +93,15 @@ public class WinScript : MonoBehaviour
                 playerOnMap[3] = GameObject.Find("Player4");
                 break;
         }
-        
-        checkWinner();
     }
 
     private void checkWinner()
     {
-        for (int x = 0; x < playerOnTheMapSize; x++)
+        for (int x = 0; x < playerOnMap.Length; x++)
         {       
             var y = SceneManager.GetActiveScene().buildIndex;
             
-            if (playerScore[x] >= 3 && y != 5)
+            if (playerScore[x] >= PointsToWin && y != 5)
             {
                 SceneManager.LoadScene(5);      
             }
