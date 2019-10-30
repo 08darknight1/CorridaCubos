@@ -1,11 +1,9 @@
-﻿using System.Collections;
-using System.Collections.Generic;
-using System.Linq;
+﻿using System.Linq;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 using UnityEngine.UI;
 
-public class WinScript : MonoBehaviour
+public class GameController : MonoBehaviour
 {
     [SerializeField] private GameObject[] playerOnMap;
         
@@ -16,6 +14,8 @@ public class WinScript : MonoBehaviour
     private GameObject winObject, canvasObject;
 
     [SerializeField] private GameObject textWinner;
+    
+    public int LastLevel;
 
     void Awake()
     {
@@ -59,8 +59,20 @@ public class WinScript : MonoBehaviour
                     playerScore[x]++;
                 }
             }
+
+            /* |||||||| ESQUEMA DE FASES SEQUENCIAIS|||||||||\
+            if (SceneManager.GetActiveScene().buildIndex < 4 && SceneManager.GetActiveScene().buildIndex != 5)
+            {
+                SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex + 1);  
+            }
+
+            if (SceneManager.GetActiveScene().buildIndex == 4 && SceneManager.GetActiveScene().buildIndex != 5)
+            {
+                SceneManager.LoadScene(0);
+            }                    
+            /* |||||||| ESQUEMA DE FASES SEQUENCIAIS|||||||||\ */
             
-            SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex + 1);                
+            RamdomizeLevel();
             
             checkWinner();
             
@@ -113,5 +125,20 @@ public class WinScript : MonoBehaviour
                 textWinner.GetComponent<Text>().text = "Jogador "+ bug2 +" Venceu";
             }
         }
+    }
+
+    private void RamdomizeLevel()
+    {
+        int level = SceneManager.GetActiveScene().buildIndex;
+        var leveltoLoad = level;
+        LastLevel = leveltoLoad;
+
+        while (leveltoLoad == level && leveltoLoad == LastLevel)
+        {
+            leveltoLoad = Random.Range(0, 5);
+            Debug.Log(leveltoLoad);
+        }
+        
+        SceneManager.LoadScene(leveltoLoad);
     }
 }

@@ -1,9 +1,12 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
+using System.Runtime.CompilerServices;
 using UnityEngine;
 
 public class PlayerController : MonoBehaviour
 {
+	public Vector3 spawnPoint;
+	
     //1 = direita; 2 = esquerda
   
     public int direcao = 1;
@@ -38,6 +41,8 @@ public class PlayerController : MonoBehaviour
 
     private void Awake()
     {
+	    spawnPoint = this.gameObject.transform.position;
+	    
         m_Rigidbody2D = GetComponent<Rigidbody2D>();
         defaultSpeed = speed;
         defaultJumpForce = m_JumpForce;
@@ -47,6 +52,7 @@ public class PlayerController : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
+	    Debug.Log(spawnPoint);
         if (m_Grounded)
         {
             // Move the character by finding the target velocity
