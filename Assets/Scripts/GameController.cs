@@ -17,6 +17,8 @@ public class GameController : MonoBehaviour
     
     public int LastLevel;
 
+    private float Timer = 5f;
+
     void Awake()
     {
         findObjects();  
@@ -31,12 +33,23 @@ public class GameController : MonoBehaviour
         winObject = GameObject.Find("Win");
         DontDestroyOnLoad(winObject);
         playerScore = new int [playerOnMap.Length];
+        for (int x = 0; x < playerOnMap.Length; x++)
+        {
+            if (PlayersOnMap.playersOnMap[x] == true)
+            {
+                playerOnMap[x].SetActive(true);
+            }
+            else
+            {
+                playerOnMap[x].SetActive(false);
+            }
+        }
     }
 
     // Update is called once per frame
     void Update()
     {
-        if (SceneManager.GetActiveScene().buildIndex == 5 && canvasObject.activeSelf == false){
+        if (SceneManager.GetActiveScene().buildIndex == 6 && canvasObject.activeSelf == false){
             canvasObject.SetActive(true);
             checkWinner();
         }
@@ -45,7 +58,13 @@ public class GameController : MonoBehaviour
              if (playerOnMap[x] == null){
                  findObjects();
              }
-         }
+        }
+        
+        CheckPlayersOnMap();
+     
+        checkWinner();
+                
+        ResetGame();
     }
 
     private void OnTriggerEnter2D (Collider2D col)
@@ -72,13 +91,15 @@ public class GameController : MonoBehaviour
             }                    
             /* |||||||| ESQUEMA DE FASES SEQUENCIAIS|||||||||\ */
             
+            checkWinner();
+            
             RamdomizeLevel();
             
             checkWinner();
             
             findObjects();
             
-        }     
+        }
     }
 
     private void findObjects()
@@ -105,6 +126,18 @@ public class GameController : MonoBehaviour
                 playerOnMap[3] = GameObject.Find("Player4");
                 break;
         }
+        
+        for (int x = 0; x < playerOnMap.Length; x++)
+        {
+            if (PlayersOnMap.playersOnMap[x] == true)
+            {
+                playerOnMap[x].SetActive(true);
+            }
+            else
+            {
+                playerOnMap[x].SetActive(false);
+            }
+        }
     }
 
     private void checkWinner()
@@ -113,12 +146,12 @@ public class GameController : MonoBehaviour
         {       
             var y = SceneManager.GetActiveScene().buildIndex;
             
-            if (playerScore[x] >= PointsToWin && y != 5)
+            if (playerScore[x] >= PointsToWin && y != 6)
             {
-                SceneManager.LoadScene(5);      
+                SceneManager.LoadScene(6);      
             }
 
-            if (y == 5){
+            if (y == 6){
                 textWinner = GameObject.FindGameObjectWithTag("Respawn");
                 var bug = playerScore.Max();
                 var bug2 = playerScore.ToList().IndexOf(bug) + 1;
@@ -129,16 +162,42 @@ public class GameController : MonoBehaviour
 
     private void RamdomizeLevel()
     {
-        int level = SceneManager.GetActiveScene().buildIndex;
-        var leveltoLoad = level;
-        LastLevel = leveltoLoad;
-
-        while (leveltoLoad == level && leveltoLoad == LastLevel)
+        if (SceneManager.GetActiveScene().buildIndex != 0)
         {
-            leveltoLoad = Random.Range(0, 5);
-            Debug.Log(leveltoLoad);
+            int level = SceneManager.GetActiveScene().buildIndex;
+            var leveltoLoad = level;
+            LastLevel = leveltoLoad;
+
+            while (leveltoLoad == level && leveltoLoad == LastLevel)
+            {
+                leveltoLoad = Random.Range(1, 5);
+                Debug.Log(leveltoLoad);
+            }
+
+            SceneManager.LoadScene(leveltoLoad);
         }
-        
-        SceneManager.LoadScene(leveltoLoad);
+    }
+    
+    public void CheckPlayersOnMap()
+    {
+        findObjects();
+        if (playerOnMap.Length == 0 && SceneManager.GetActiveScene().buildIndex != 6)
+        {
+            RamdomizeLevel();
+        }
+    }
+
+    public void ResetGame()
+    {
+        if (SceneManager.GetActiveScene().buildIndex == 6)
+        {
+            Timer -= Time.deltaTime;
+            if (Timer <= 0)
+            {
+                var x = GameObject.Find("Win");
+                Destroy(x);
+                SceneManager.LoadScene(0);     
+            }
+        }
     }
 }

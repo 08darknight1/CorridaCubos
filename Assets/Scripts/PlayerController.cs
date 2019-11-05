@@ -42,7 +42,7 @@ public class PlayerController : MonoBehaviour
     private void Awake()
     {
 	    spawnPoint = this.gameObject.transform.position;
-	    
+	    Debug.Log(spawnPoint);
         m_Rigidbody2D = GetComponent<Rigidbody2D>();
         defaultSpeed = speed;
         defaultJumpForce = m_JumpForce;
@@ -51,8 +51,7 @@ public class PlayerController : MonoBehaviour
 
     // Update is called once per frame
     void Update()
-    {
-	    Debug.Log(spawnPoint);
+    {   
         if (m_Grounded)
         {
             // Move the character by finding the target velocity
@@ -268,4 +267,6 @@ public class PlayerController : MonoBehaviour
     {
         speed = defaultSpeed;
     }
+    
+
 }

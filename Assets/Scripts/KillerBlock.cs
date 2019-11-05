@@ -4,25 +4,27 @@ using UnityEngine;
 
 public class KillerBlock : MonoBehaviour
 {
-    // Start is called before the first frame update
+  //  public GameObject gameController;
+    public bool Respawn;
+    
     void Start()
-    {
-        
-    }
-
-    // Update is called once per frame
-    void Update()
-    {
-        
+    {    
+       // gameController = GameObject.Find("Win");  
     }
 
     private void OnTriggerEnter2D(Collider2D other)
     {
         if (other.tag == "Player")
         {
-            //    var kkk = other.transform.GetComponent<PlayerController>().spawnPoint;
-            //  other.gameObject.transform.position = kkk.position;
-            other.transform.position = other.transform.GetComponent<PlayerController>().spawnPoint;
+            if(Respawn == true){
+                other.transform.position = other.transform.GetComponent<PlayerController>().spawnPoint;
+            }
+            else{
+                Destroy(other.gameObject);
+            }
         }
+        
     }
+
+ 
 }
