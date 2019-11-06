@@ -25,6 +25,17 @@ public class GameController : MonoBehaviour
         playerScore = new int [playerOnMap.Length];
         canvasObject = GameObject.FindGameObjectWithTag("UI");
         canvasObject.SetActive(false);
+        for (int x = 0; x < playerOnMap.Length; x++)
+        {
+            if (PlayersOnMap.playersOnMap[x] == true)
+            {
+                playerOnMap[x].SetActive(true);
+            }
+            else
+            {
+                playerOnMap[x].SetActive(false);
+            }
+        }
     }    
     
     void Start()
@@ -48,7 +59,7 @@ public class GameController : MonoBehaviour
 
     // Update is called once per frame
     void Update()
-    {
+    {    
         if (SceneManager.GetActiveScene().buildIndex == 6 && canvasObject.activeSelf == false){
             canvasObject.SetActive(true);
             checkWinner();
@@ -76,9 +87,18 @@ public class GameController : MonoBehaviour
                 if (col.gameObject.name == playerOnMap[x].name)
                 {    
                     playerScore[x]++;
+                    
+                    checkWinner();
+                    
+                    RamdomizeLevel();
+            
+                    findObjects();
+                    
+                    checkWinner();
                 }
             }
-
+            
+            
             /* |||||||| ESQUEMA DE FASES SEQUENCIAIS|||||||||\
             if (SceneManager.GetActiveScene().buildIndex < 4 && SceneManager.GetActiveScene().buildIndex != 5)
             {
@@ -90,17 +110,9 @@ public class GameController : MonoBehaviour
                 SceneManager.LoadScene(0);
             }                    
             /* |||||||| ESQUEMA DE FASES SEQUENCIAIS|||||||||\ */
-            
-            checkWinner();
-            
-            RamdomizeLevel();
-            
-            checkWinner();
-            
-            findObjects();
-            
         }
     }
+    
 
     private void findObjects()
     {
@@ -191,6 +203,7 @@ public class GameController : MonoBehaviour
     {
         if (SceneManager.GetActiveScene().buildIndex == 6)
         {
+            checkWinner();
             Timer -= Time.deltaTime;
             if (Timer <= 0)
             {

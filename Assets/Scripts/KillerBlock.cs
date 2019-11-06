@@ -4,14 +4,8 @@ using UnityEngine;
 
 public class KillerBlock : MonoBehaviour
 {
-  //  public GameObject gameController;
     public bool Respawn;
     
-    void Start()
-    {    
-       // gameController = GameObject.Find("Win");  
-    }
-
     private void OnTriggerEnter2D(Collider2D other)
     {
         if (other.tag == "Player")
@@ -22,9 +16,6 @@ public class KillerBlock : MonoBehaviour
             else{
                 Destroy(other.gameObject);
             }
-        }
-        
+        }   
     }
-
- 
 }

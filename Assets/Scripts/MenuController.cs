@@ -46,6 +46,7 @@ public class MenuController : MonoBehaviour
             {
                 playerOnMap[x].SetActive(false);
             }
+            PlayersOnMap.playersOnMap[x] = false;
         }
         
         key[0] = KeyCode.Z;
@@ -85,11 +86,23 @@ public class MenuController : MonoBehaviour
     {
         for (int x = 0; x < playerOnMap.Length; x++)
         {
-            if (Input.GetKeyDown(key[x]))
+            switch (x)
             {
-                PlayersOnMap.playersOnMap[x] = true;
-                playerOnMap[x].SetActive(true);
-            }         
+                case 0:
+                    if (Input.GetKeyDown(key[x]))
+                    {
+                        PlayersOnMap.playersOnMap[x] = true;
+                        playerOnMap[x].SetActive(true);
+                    }
+                break;
+                default:
+                    if (Input.GetKeyDown(key[x]) &&  playerOnMap[x-1].active == true)
+                    {
+                        PlayersOnMap.playersOnMap[x] = true;
+                        playerOnMap[x].SetActive(true);
+                    }       
+                break;
+            }
         }
     }
 
