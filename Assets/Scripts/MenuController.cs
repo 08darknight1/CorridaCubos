@@ -1,4 +1,5 @@
-﻿using System.Collections;
+﻿using Rewired;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.SceneManagement;
@@ -11,113 +12,116 @@ public class MenuController : MonoBehaviour
     [SerializeField] private float timeLeft = 60f;
     
     public float timerNumber;
-    
-    [SerializeField] private GameObject[] playerOnMap = new GameObject[4];
-    
-    public KeyCode[] key; 
-    
-    public int playersProntos = 0;
 
     private GameObject textoTimer;
-    
-    private void Awake()
-    {  
-        key = new KeyCode[4];
-        
-     /*   playerOnMap[0] = GameObject.Find("Player1");
-        playerOnMap[1] = GameObject.Find("Player2");
-        playerOnMap[2] = GameObject.Find("Player3");
-        playerOnMap[3] = GameObject.Find("Player4");*/
 
-        playerOnMap = GameObject.FindGameObjectsWithTag("Player");
+    //
 
-        textoTimer = GameObject.Find("TextTimer");
-        
-        timeLeft = timerNumber;
-    }
+    private bool _gameStarted, _registerNewKey = true;
+
+    private int _playersReady;
+
+    private Player _rewiredInitialPlayer;
+
+    public GameObject CubeRacerPrefab;
+
+    private List<PlayerController> _playersList;
+
 
     void Start()
     {
-        findPlayers();
-        
-        for (int x = 0; x < playerOnMap.Length; x++)
-        {
-            if (playerOnMap[x].tag == "Player")
-            {
-                playerOnMap[x].SetActive(false);
-            }
-            PlayersOnMap.playersOnMap[x] = false;
-        }
-        
-        key[0] = KeyCode.Z;
-        key[1] = KeyCode.X;
-        key[2] = KeyCode.C;
-        key[3] = KeyCode.V;
-        
+        textoTimer = GameObject.Find("TextTimer");
+
+        timeLeft = timerNumber;
+
         textoTimer.GetComponent<Text>().text = timeLeft.ToString();
+
+        _playersList = new List<PlayerController>();
     }
 
     // Update is called once per frame
     void Update()
     {
-        ActivatePlayers();
-        
-        if (timeOn == true)
+        if (!_gameStarted)
         {
-            timeLeft -= Time.deltaTime;
-            var kkk = timeLeft;
-            textoTimer.GetComponent<Text>().text = timeLeft.ToString("N0");
-            if ( timeLeft < 0 )
+            ActivatePlayers();
+
+            if (timeOn == true)
             {
-                SceneManager.LoadScene(1);
+                timeLeft -= Time.deltaTime;
+                var kkk = timeLeft;
+                textoTimer.GetComponent<Text>().text = timeLeft.ToString("N0");
+                if (timeLeft < 0)
+                {
+                    SceneManager.LoadScene(1);
+                }
+
+                if (_playersReady >= 4 && macete == false)
+                {
+                    timeLeft = 5;
+                    macete = true;
+                }
             }
 
-            if (playersProntos >= 4 && macete == false)
-            {
-                timeLeft = 5;
-                macete = true;
-            }
+            //playersReady();
         }
-        
-        playersReady();
     }
 
     public void ActivatePlayers()
     {
-        for (int x = 0; x < playerOnMap.Length; x++)
+        if(_playersReady < 4)
         {
-            switch (x)
+            //ReInput.controllers.
+
+            _rewiredInitialPlayer = ReInput.players.GetPlayer(_playersReady);
+
+            if (_rewiredInitialPlayer.controllers.Keyboard.PollForFirstKeyDown().success)
             {
-                case 0:
-                    if (Input.GetKeyDown(key[x]))
+                var pressedKey = _rewiredInitialPlayer.controllers.Keyboard.PollForFirstKeyDown().keyboardKey;
+
+                if(_playersList.Count > 0) 
+                {
+                    for (int x = 0; x < _playersList.Count; x++)
                     {
-                        PlayersOnMap.playersOnMap[x] = true;
-                        playerOnMap[x].SetActive(true);
+                        if (_playersList[x].ReturnJumpKey() == pressedKey)
+                        {
+                            _registerNewKey = false;
+                            break;
+                        }
+                        else
+                        {
+                            _registerNewKey = true;
+                        }
                     }
-                break;
-                default:
-                    if (Input.GetKeyDown(key[x]) &&  playerOnMap[x-1].active == true)
-                    {
-                        PlayersOnMap.playersOnMap[x] = true;
-                        playerOnMap[x].SetActive(true);
-                    }       
-                break;
+                }
+
+                if (_registerNewKey)
+                {
+                    var newRacer = Instantiate(CubeRacerPrefab);
+
+                    _playersList.Add(newRacer.GetComponent<PlayerController>());
+
+                    newRacer.GetComponent<PlayerController>().SetPlayerJumpKey(_playersReady, pressedKey);
+
+                    _playersReady++;
+                }
             }
         }
     }
 
+    /*
     public void playersReady()
     {
-        playersProntos = 0;
+        _playersReady = 0;
         
         for (int x = 0; x < playerOnMap.Length; x++)
         {
-            if (playerOnMap[x].gameObject.active == true)
+            if (playerOnMap[x].gameObject.activeSelf)
             {
-                playersProntos = playersProntos + 1;
+                _playersReady = _playersReady + 1;
             }
         }
-        if (playersProntos >= 2)
+        if (_playersReady >= 2)
         {
             timeOn = true;
         }
@@ -126,13 +130,10 @@ public class MenuController : MonoBehaviour
             timeOn = false;
             timeLeft = timerNumber;
         }
-    }
-
-    private void findPlayers()
-    {
-        playerOnMap[0] = GameObject.Find("Player1");
-        playerOnMap[1] = GameObject.Find("Player2");
-        playerOnMap[2] = GameObject.Find("Player3");
-        playerOnMap[3] = GameObject.Find("Player4");
-    }
+    }*/
 }
+
+/*
+         playerOnMap = GameObject.FindGameObjectsWithTag("Player");
+ * */
+

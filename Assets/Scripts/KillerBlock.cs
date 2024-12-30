@@ -4,16 +4,22 @@ using UnityEngine;
 
 public class KillerBlock : MonoBehaviour
 {
-    public bool Respawn;
-    
+    private bool _respawn;
+
+    private void Start()
+    {
+        _respawn = GlobalConfig.killBlockRespawn;
+    }
+
     private void OnTriggerEnter2D(Collider2D other)
     {
         if (other.tag == "Player")
         {
-            if(Respawn == true){
+            if(_respawn){
                 other.transform.position = other.transform.GetComponent<PlayerController>().spawnPoint;
             }
-            else{
+            else
+            {
                 Destroy(other.gameObject);
             }
         }   

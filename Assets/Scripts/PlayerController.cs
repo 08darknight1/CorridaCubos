@@ -1,4 +1,5 @@
-﻿using System.Collections;
+﻿using Rewired;
+using System.Collections;
 using System.Collections.Generic;
 using System.Runtime.CompilerServices;
 using UnityEngine;
@@ -12,9 +13,12 @@ public class PlayerController : MonoBehaviour
     public int direcao = 1;
     public float speed = 0;
     public float countDown = 1.0f;
-    public KeyCode key = KeyCode.W;
     public float maxJumpForce = 400;
     public float jumpGrowth = 5;
+
+    private Player _rewiredPlayerInput;
+
+    private KeyCode _playerJumpKey;
 
     private Rigidbody2D m_Rigidbody2D;
     const float k_GroundedRadius = .2f; // Radius of the overlap circle to determine if grounded
@@ -35,20 +39,20 @@ public class PlayerController : MonoBehaviour
     [SerializeField] private Transform m_WallCheckL3;							// A position marking where to check if the player is grounded.
     [SerializeField] private LayerMask m_WhatIsWall;							// A mask determining what is ground to the character
     private float defaultSpeed;
-    private bool charging = false;
+    //private bool charging = false;
 	private float defaultJumpForce;
 	private float defaultCountDown;
 
-    private void Awake()
+    private void Start()
     {
-	    spawnPoint = this.gameObject.transform.position;
-	    Debug.Log(spawnPoint);
+        spawnPoint = this.gameObject.transform.position;
+        Debug.Log(spawnPoint);
         m_Rigidbody2D = GetComponent<Rigidbody2D>();
         defaultSpeed = speed;
         defaultJumpForce = m_JumpForce;
-		defaultCountDown = countDown;
-	}
-
+        defaultCountDown = countDown;
+    }
+    
     // Update is called once per frame
     void Update()
     {   
@@ -68,7 +72,7 @@ public class PlayerController : MonoBehaviour
                 m_Rigidbody2D.velocity = Vector3.SmoothDamp(m_Rigidbody2D.velocity, targetVelocity, ref m_Velocity, m_MovementSmoothing);
             }
         }
-        if (Input.GetKeyDown(key) && m_Grounded)
+        if (_rewiredPlayerInput.GetButtonDown("Jump") && m_Grounded)
         {
 			//countDown -= Time.deltaTime;
 			//if (countDown < 0)
@@ -87,7 +91,7 @@ public class PlayerController : MonoBehaviour
    //         m_JumpForce = defaultJumpForce;
    //         countDown = defaultCountDown;
    //     }
-        else if (Input.GetKeyDown(key) && !m_Grounded)
+        else if (_rewiredPlayerInput.GetButtonDown("Jump") && !m_Grounded)
         {
             Collider2D[] collidersWallR1 = Physics2D.OverlapCircleAll(m_WallCheckR1.position, k_WallRadius, m_WhatIsWall);
             for (int i = 0; i < collidersWallR1.Length; i++)
@@ -262,11 +266,27 @@ public class PlayerController : MonoBehaviour
             }
         }
     }
-
+    
     private void setSpeed()
     {
         speed = defaultSpeed;
     }
-    
 
+    public void SetPlayerJumpKey(int playerID, KeyCode jumpKey)
+    {
+        _rewiredPlayerInput = ReInput.players.GetPlayer(playerID);
+
+        var playerMap = _rewiredPlayerInput.controllers.maps.GetAllMapSaveData(true);
+
+        playerMap[0].map.enabled = true;
+
+        playerMap[0].map.ElementMaps[0].keyCode = jumpKey;
+
+        _playerJumpKey = jumpKey;
+    }
+
+    public KeyCode ReturnJumpKey()
+    {
+        return _playerJumpKey;
+    }
 }

@@ -27,7 +27,7 @@ public class GameController : MonoBehaviour
         canvasObject.SetActive(false);
         for (int x = 0; x < playerOnMap.Length; x++)
         {
-            if (PlayersOnMap.playersOnMap[x] == true)
+            if (GlobalConfig.playersOnMap[x] == true)
             {
                 playerOnMap[x].SetActive(true);
             }
@@ -46,7 +46,7 @@ public class GameController : MonoBehaviour
         playerScore = new int [playerOnMap.Length];
         for (int x = 0; x < playerOnMap.Length; x++)
         {
-            if (PlayersOnMap.playersOnMap[x] == true)
+            if (GlobalConfig.playersOnMap[x] == true)
             {
                 playerOnMap[x].SetActive(true);
             }
@@ -141,7 +141,7 @@ public class GameController : MonoBehaviour
         
         for (int x = 0; x < playerOnMap.Length; x++)
         {
-            if (PlayersOnMap.playersOnMap[x] == true)
+            if (GlobalConfig.playersOnMap[x] == true)
             {
                 playerOnMap[x].SetActive(true);
             }
